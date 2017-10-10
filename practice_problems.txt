@@ -1,0 +1,27 @@
+Q1 - Differences between SQL and ER:
+
+Mistake 1: Orders has cid not null, but this is exactly one so you need to get rid of this. Foreign Key not null is the only way to create an exactly one.
+
+Mistake 2: ER diagram is missing oid for OrderLines and it is not a primary key.
+
+Mistake 3: Price is an attribute of orderline in ER but items in SQL. The reason you might want it this way is because it allows you to record historical prices.
+
+Q2 - List three additional check Constraints that make sense
+1) Orderlines quantity CHECK(quantity>0)
+2) Orders date Check(date>today())
+3) Orderlines quantity CHECK(price>0)
+
+Q3 - Total number of items and the total dollar value of all items sold
+
+SELECT SUM(I.price), SUM(O.quantity*I.price)
+FROM OrderLines AS O, Items AS I
+WHERE O.iid=I.iid
+
+Q4 - What are the names of customers who purchased a Nexus 5x
+
+SELECT C.name
+FROM Orders AS O2, Customers AS C, 
+WHERE C.cid=O2.cid AND O2.oid IN
+	( SELECT O.oid
+	  FROM Items AS I, OrderLines AS O
+	  WHERE O.oid=I.oid AND description = "Nexus 5x")

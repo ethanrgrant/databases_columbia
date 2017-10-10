@@ -1,0 +1,13 @@
+Commands:
+
+SELECT u_id
+FROM Individuals AS I, Neighborhoods AS N
+WHERE n.n_id = 11, I.education_level = "college", n.nid=I.n_id
+
+SELECT COUNT(*)
+FROM Public_transit P
+WHERE P.type="subway"
+
+SELECT [DISTINCT] neighborhood_name
+FROM Individuals I, Neighborhoods n
+WHERE n.nid=u.nid, 

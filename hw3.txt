@@ -1,0 +1,91 @@
+q1.1:
+CREATE TABLE bot_sum_qty AS SELECT store, SUM(bottle_qty) AS "bottle_qty" FROM iowa GROUP BY store;
+
+SELECT store  FROM bot_sum_qty where bottle_qty in (select max(bottle_qty) from bot_sum_qty)
+
+answer 2633
+
+q1.2:
+CREATE TABLE sales_des AS select store, sum(bottle_qty) AS "bottle_qty", description from iowa where store in (SELECT store  FROM bot_sum_qty where bottle_qty in (select max(bottle_qty) from bot_sum_qty)) group by description
+
+select description, max(bottle_qty) from sales_des
+
+Juarez Tequila Gold
+
+q1.3
+CREATE TABLE zip_cat_qty AS select zipcode, category_name, sum(bottle_qty) AS "bottle_qty" from iowa group by zipcode, category_name;
+
+select zipcode, category_name, max(bottle_qty) from zip_cat_qty group by zipcode order by bottle_qty desc limit 5;
+
+q1.4
+SELECT city FROM iowa as iowa GROUP BY store HAVING ((SELECT COUNT(DISTINCT item) FROM iowa as iowa2 WHERE iowa.store=iowa2.store AND iowa2.description LIKE '%scotch%' AND bottle_qty>0) = (SELECT COUNT(DISTINCT item) FROM iowa WHERE description LIKE '%scotch%'));
+
+q1.5
+CREATE TABLE store_item_average AS select store, item, avg(btl_price/liter_size) AS 'avg' from iowa where liter_size>0 group by store, item;
+
+CREATE TABLE item_avg AS select item, avg(avg) AS avg from store_item_average group by item
+
+select item from item_avg where avg = (select min(avg) from item_avg)
+86390
+
+q1.6
+For me, the main differences in writing SQL vs python code is that SQL enables the user to do far more in a single line while python often encourages the user to write many smaller lines and produce lots of intermitent results. I found myself much more loathe to create a table as an intermediate result while writing sql then i was to store values in variables in python. 
+
+A pro for python is that these intermediate results make it far easier to check your work intermitently. Additionally, python makes it easier syntatically to compare two values because you can store things in variables (i.e. can have if(x=max) vs where x = (select max(x)...)) This makes writing python more understandable for me to read thought this could just be familiarity. A con of python is that it does not operate nearly as fast. My SQL queries on the other hand all operated very quickly. I have used pythong to query csvs that are 100,000 lines (still an order of magnitude below iowa.db) and it did not operate nearly as quickly. Additionally a pro for SQL is that you can accomplish a ton with a single line which can be very nice to avoid spending a lot of time on code.
+
+
+
+
+q2.1
+C -> A
+C -> B
+A -> B
+CA -> B
+
+Keys: C
+
+q2.2
+AB -> C
+AB -> D
+BC -> A
+BC -> D
+CD -> A
+CD -> B
+AD -> B
+AD -> C
+ADB -> C
+ACD -> B
+BCD -> A
+ABC -> D
+
+keys:
+AB
+BC
+CD
+AD
+
+q2.3
+store, vendor_no, item, date
+
+2.4
+store -> convience_store, address, name, city, zipcode, store_location, county_number, county
+vendor_no -> vendor
+category -> category_name
+item -> category, description, state_btl_cost, btl_price
+date, store, vendor_no, item -> pack, bottle_qty, total
+
+I broke down the tables the way I did because bcnf is a subset of 3nf and this set of functional dependencies deals with every column in the db. I felt that there was no need to use the extra qualification in 3nf since this breakdown was already redudency free.
+
+q2.5
+My shcema is redundency free because it is in BCNF which guarantees no redundency. Since these are all functional dependencies you know that, for instance, each store must determine every single one of the attributes on the right side of the FD in a determinsitic fashion (for instance store = 1 means address = 21 fake street every time and nothing else) and thus you couldn't have stores that repeat info. However, it is not anomoly free consider that if you tried to delete a vendor there would be issues with the FD that determines a sale (date, store, vendor_no, item -> pack, bottle_qty, total) and that those sales might have to be deleted or could possibly no longer be uniquely identified. 
+
+q2.6
+There is no way to do this using functional dependencies because a functional dependency could ensure that there must be SOME bottle_qty but it cannot say anything about the number it could even be zero. 
+
+q2.7
+SELECT DISTINCT name from iowa where store=2508 returns 3 values
+
+q2.8
+store -> name thus should not be a functional dependency because multiple names can be associated with a single store as shown previously which means it is not a statement about all instances of the relation
+
+

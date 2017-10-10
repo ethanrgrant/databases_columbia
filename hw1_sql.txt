@@ -1,0 +1,63 @@
+CREATE TABLE Professor(
+	ssn int,
+	name text,
+	PRIMARY KEY(ssn)
+);
+
+CREATE TABLE Deparment(
+	d_name text,
+	PRIMARY KEY(text)
+);
+
+CREATE TABLE Junior(
+	#_years int,
+	PRIMARY KEY(ssn),
+	FOREIGN KEY(ssn) REFERENCES Proffessor,
+);
+
+CREATE TABLE Tenure(
+	tenure_year int,
+	PRIMARY KEY(ssn)
+	FOREIGN KEY(ssn) REFERENCES Proffessor,
+);
+
+CREATE TABLE Chairperson(
+	PRIMARY KEY(ssn),
+	FOREIGN KEY(ssn) REFERENCES Tenure,
+);
+
+CREATE TABLE Course_During_Term_Offers(
+	c_name text,
+	number text,
+	capacity int,
+	semester text,
+	year text,
+	d_name text,
+	PRIMARY KEY(d_name, c_name),
+	FOREIGN KEY(d_name) REFERENCES Department
+		ON DELETE CASCADE
+);
+
+CREATE TABLE affiliated(
+	ssn int,
+	d_name text NOT NULL,
+	PRIMARY KEY(ssn)
+	FOREIGN KEY(ssn) REFERENCES Professor,
+	FOREIGN KEY(name) References Department,
+);
+
+CREATE TABLE Taught(
+	ssn int
+	c_name text,
+	PRIMARY KEY(ssn, c_name)
+	FOREIGN KEY(ssn) REFERENCES Professor,
+	FOREIGN KEY(d_name) REFERENCES Course_During_Term_Offers,
+	
+);
+
+CREATE TABLE Department_Run_by(
+	ssn int,
+	d_name text,
+	PRIMARY KEY(d_name)
+	FOREIGN KEY ssn REFERENCES ChairPerson
+);
